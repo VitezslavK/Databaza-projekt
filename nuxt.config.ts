@@ -14,6 +14,10 @@ export default defineNuxtConfig({
     '@nuxt/icon',
   ],
 
+  components: [
+    { path: '~/components', pathPrefix: false },
+  ],
+
   // We handle auth redirects ourselves via middleware
   supabase: {
     redirect: false,

@@ -26,13 +26,17 @@ SECURITY DEFINER
 SET search_path = public
 AS $$
 BEGIN
-  INSERT INTO public.profiles (id, email, display_name)
+  INSERT INTO public.profiles (id, email, display_name, role)
   VALUES (
     NEW.id,
     NEW.email,
     COALESCE(
       NEW.raw_user_meta_data ->> 'display_name',
       split_part(NEW.email, '@', 1)
+    ),
+    COALESCE(
+      NEW.raw_user_meta_data ->> 'role',
+      'student'
     )
   )
   ON CONFLICT (id) DO NOTHING;

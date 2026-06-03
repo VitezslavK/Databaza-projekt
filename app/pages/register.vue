@@ -51,6 +51,31 @@
         />
       </div>
 
+      <div class="form-group">
+        <label>Role</label>
+        <div class="grid grid-cols-2 gap-3 mt-1">
+          <label
+            v-for="option in roleOptions"
+            :key="option.value"
+            class="flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors"
+            :class="form.role === option.value
+              ? 'border-primary-500 bg-primary-50 text-primary-700'
+              : 'border-gray-200 hover:border-gray-300'"
+          >
+            <input
+              v-model="form.role"
+              type="radio"
+              :value="option.value"
+              class="!w-4 !h-4 !rounded-full !p-0 accent-primary-600"
+            />
+            <div>
+              <div class="text-sm font-medium">{{ option.label }}</div>
+              <div class="text-xs text-gray-500">{{ option.description }}</div>
+            </div>
+          </label>
+        </div>
+      </div>
+
       <div v-if="error" class="flex items-start gap-2 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
         <Icon name="heroicons:exclamation-circle" class="w-4 h-4 shrink-0 mt-0.5" />
         {{ error }}
@@ -85,11 +110,17 @@ if (user.value) {
   await navigateTo('/resources', { replace: true })
 }
 
+const roleOptions = [
+  { value: 'student', label: 'Žák', description: 'Může rezervovat zdroje' },
+  { value: 'admin', label: 'Admin', description: 'Spravuje systém' },
+]
+
 const form = reactive({
   displayName: '',
   email: '',
   password: '',
   passwordConfirm: '',
+  role: 'student',
 })
 
 const loading = ref(false)
@@ -115,12 +146,11 @@ const handleRegister = async () => {
       email: form.email,
       password: form.password,
       options: {
-        data: { display_name: form.displayName },
+        data: { display_name: form.displayName, role: form.role },
       },
     })
     if (authError) throw authError
-    success.value =
-      'Účet byl vytvořen. Zkontrolujte svůj e-mail a potvrďte registraci, poté se přihlaste.'
+    success.value = 'Účet byl vytvořen. Zkontrolujte svůj e-mail a potvrďte registraci, poté se přihlaste.'
     Object.assign(form, { displayName: '', email: '', password: '', passwordConfirm: '' })
   } catch (e: any) {
     if (e.message?.includes('already registered')) {
